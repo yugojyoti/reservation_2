@@ -1,0 +1,95 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Restaurant {
+  id  String  @id @default(auto()) @map("_id") @db.ObjectId
+  name String 
+  main_image String 
+  images String[]
+  description String 
+  open_time String 
+  close_time String 
+  items Item[]
+  slug String @unique
+  price PRICE
+  location_id String @db.ObjectId
+  location Location @relation(fields: [location_id], references: [id])
+  cuisine_id String @db.ObjectId
+  cusine Cuisine @relation(fields: [cuisine_id],references: [id])
+  review Review[]
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Item{
+  id  String @id @default(auto()) @map("_id") @db.ObjectId
+  name String 
+  price String 
+  description String 
+  restaurant_id String @db.ObjectId
+  restaurant Restaurant @relation(fields: [restaurant_id] ,references: [id])
+
+  created_At DateTime @default(now())
+  updated_At DateTime @updatedAt
+}
+
+model Location{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String 
+  restaurant Restaurant[]
+  created_At DateTime @default(now())
+  updated_At  DateTime @updatedAt
+
+}
+model Cuisine{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String 
+  restaurant Restaurant[]
+  created_At DateTime @default(now())
+  updated_At  DateTime @updatedAt
+
+}
+
+model Review {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  first_name String 
+  last_name String 
+  text String 
+  rating Float 
+  restaurant_id String @db.ObjectId
+  restaurant Restaurant @relation(fields: [restaurant_id], references: [id])
+  user_id String @db.ObjectId 
+  user User @relation(fields: [restaurant_id], references: [id])
+  created_At DateTime @default(now())
+  updated_At DateTime @updatedAt
+}
+
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  first_name String 
+  last_name String 
+  city String 
+  email String 
+  password String
+  phone String 
+  review Review[]
+
+  created_At DateTime @default(now())
+  updated_At DateTime @updatedAt
+}
+
+enum PRICE{
+  CHEAP
+  REGULAR
+  EXPENSIVE
+}
